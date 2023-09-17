@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>森哥记事本</title>
+  <style>
+    #app {
+      width: 550px;
+      /* height: 200px; */
+      margin: auto;
+      margin-top: 220px;
+      /* background-color: pink; */
+      padding: 5px 10px;
+      background-color: #fff;
+    }
+    header {
+      position: relative;
+    }
+    h1 {
+      position: absolute;
+      top: -95px;
+      text-align: center;
+      font-size: 55px;
+      font-weight: 100;
+      width: 100%;
+      color: #455CE3;
+    }
+    ul li {
+      position: relative;
+      /* text-align: center; */
+
+    }
+    ul li .btn {
+      position: absolute;
+      display: none;
+      right: 10px;
+      top: 1px;
+    }
+    li:hover .btn {
+      display: inline-block;
+    }
+    .footer {
+      position: relative;
+      margin-top: 10px;
+      padding: 0 5px;
+      height: 50px;
+      line-height: 50px;
+    }
+    .clearAll {
+      /* float: right; */
+      position: absolute;
+      top: 1px;
+      right: 0;
+    }
+    .remove-shadow:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  .modalBtn {
+    position: relative;
+    height: 72px;
+  }
+  .modalBtnleft {
+    position: absolute;
+    left: 16px;
+    top: 12px;
+  }
+  </style>
+</head>
+<body  class="bg-light">
+    <section id="app" class="shadow">
+      <!-- header部分 -->
+      <header>
+        <h1>Asher's todolist</h1>
+        <div class="input-group mb-3">
+          <input type="text" v-model="todoName" @keyup.enter="addStuff" class="form-control" placeholder="Add..." aria-label="Search" aria-describedby="searchButton">
+          <div class="input-group-append">
+            <button class="btn btn-primary remove-shadow" type="button" id="searchButton" @click="addStuff">Add</button>
+          </div>
+        </div>
+      </header>
+      <!-- main部分 -->
+      <section>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item border-bottom" v-for="(item,index) in todoList" :key="item.id">
+            <span>{{index + 1}}.</span>&nbsp
+            <label>{{item.name}}</label>
+            <button class="btn text-danger h1 remove-shadow" @click="deleteStuff(item.id)">X</button>
+          </li>
+        </ul>
+      </section>
+      <!-- footer部分 -->
+      <footer class="footer">
+        合计: <strong>{{todoList.length}}</strong>
+        <button type="button" class="btn btn-outline-danger remove-shadow clearAll" data-bs-toggle="modal" data-bs-target="#myModal">
+          clearAll
+        </button>
+        <!-- <button class="clearAll btn btn-outline-danger remove-shadow" @click="showConfirmation" data-bs-target="#myModal">clearAll</button> -->
+      </footer>
+      <!-- 模态 -->
+      <!-- 打开模态的按钮 -->
+          <!-- <button type="button" class="btn btn-outline-danger remove-shadow clearAll" data-bs-toggle="modal" data-bs-target="#myModal">
+            clearAll
+          </button>
+ -->
+<!-- 模态 -->
+        <div class="modal fade" id="myModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <!-- 模态标题 -->
+              <div class="modal-header">
+                <h4 class="modal-title">删除全部确认</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <!-- 模态主体 -->
+              <div class="modal-body">
+                你确认要删除todoList里的全部内容吗？
+              </div>
+
+              <!-- 模态页脚 -->
+              <div class="modal-footer modalBtn">
+                  <button type="button" class="btn btn-danger modalBtnleft" data-bs-dismiss="modal" @click="clearAllStuff">确认</button>
+                  <button type="button" class="btn btn-light " data-bs-dismiss="modal" >取消</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </section>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el:'#app',
+      data: {
+        // count:100
+        todoName:'',
+        modalShow:false,
+        todoList:JSON.parse(localStorage.getItem('mytodoList'))
+      },
+      methods: {
+        addStuff () {
+          if(this.todoName){
+            this.todoList.unshift({
+            id: +new Date(),
+            name: this.todoName
+          })
+          this.todoName=''
+          // console.log(JSON.stringify(this.todoList));
+          localStorage.setItem('mytodoList',JSON.stringify(this.todoList))
+          }
+          // console.log(this.todoList);
+        },
+        deleteStuff (id) {
+          this.todoList = this.todoList.filter(item => item.id !== id)
+          localStorage.setItem('mytodoList',JSON.stringify(this.todoList))
+        },
+        clearAllStuff () {
+          this.todoList = []
+          localStorage.setItem('mytodoList',JSON.stringify(this.todoList))
+        },
+        showConfirmation () {
+          this.modalShow = true
+        }
+      }
+    })
+  </script>
+</body>
+</html>
